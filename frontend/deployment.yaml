@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: rajcharan2002/frontending:latest
+        command: ["bash", "-c", "sleep infinity"]  # Added command to keep the container running indefinitely
+        ports:
+        - containerPort: 80
+

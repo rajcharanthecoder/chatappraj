@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: rajcharan2002/backend:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-c"]
+        args: ["sleep infinity"]
+        ports:
+        - containerPort: 8000
+        env:
+          - name: DB_ENGINE
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: DB_ENGINE
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: DB_NAME
+          - name: DB_USER
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: DB_USER
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: DB_HOST
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: backend-config
+                key: DB_PORT
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: backend-password
+                key: DB_PASSWORD
