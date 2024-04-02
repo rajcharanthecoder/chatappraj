@@ -1,5 +1,4 @@
 FROM ubuntu:18.04
-
 RUN apt-get update && apt-get install -y \
     nano \
     python3 \
@@ -29,15 +28,15 @@ COPY entrypoint.sh /app
 # Make entrypoint script executable
 RUN chmod +x /app/entrypoint.sh
 
-# Install dependencies
+# Install dependencies and run migrations
 RUN . venv/bin/activate && \
     pip3 install mysqlclient && \
     pip3 install -r requirements.txt && \
     cd ./fundoo && \
     pip3 install python-dotenv
 
-# Expose port
-EXPOSE 8000
-
 # Define entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Expose port
+EXPOSE 8000

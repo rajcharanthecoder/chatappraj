@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-deployment
+spec:
+  replicas: 10  # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: stress
+  template:
+    metadata:
+      labels:
+        app: stress
+    spec:
+      containers:
+      - name: stress-container
+        image: progrium/stress
+        command: ["stress"]
+        args: ["--cpu", "2", "--timeout", "600s"]

@@ -17,9 +17,7 @@ spec:
       containers:
       - name: backend
         image: rajcharan2002/backend:latest
-        imagePullPolicy: IfNotPresent
-        command: ["/bin/bash", "-c"]
-        args: ["sleep infinity"]
+        command: ["/bin/bash", "-c","source /app/venv/bin/activate && cd /app/fundoo && python3 manage.py migrate && /app/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 fundoo.wsgi:application"]
         ports:
         - containerPort: 8000
         env:
@@ -53,3 +51,17 @@ spec:
               secretKeyRef:
                 name: backend-password
                 key: DB_PASSWORD
+        resources:
+          limits:
+            cpu: "500m"
+          requests:
+            cpu: "200m"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-group  # Corrected to node-group
+                operator: In
+                values:
+                - frontback

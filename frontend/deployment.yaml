@@ -15,9 +15,21 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx
-        image: rajcharan2002/frontending:latest
-        command: ["bash", "-c", "sleep infinity"]  # Added command to keep the container running indefinitely
-        ports:
-        - containerPort: 80
-
+        - name: nginx
+          image: rajcharan2002/frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: "500m"
+            requests:
+              cpu: "200m"
+      affinity:                         # Add the node affinity section here
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-group          # Specify the node group label key
+                    operator: In
+                    values:
+                      - frontback            # Specify the node group label value

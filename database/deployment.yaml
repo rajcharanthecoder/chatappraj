@@ -13,6 +13,15 @@ spec:
       labels:
         app: mysql
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - database
       containers:
         - image: rajcharan2002/database:latest
           name: mysql
@@ -28,7 +37,32 @@ spec:
           volumeMounts:
             - name: mysql-persistent-storage
               mountPath: /var/lib/mysql
+          resources:
+            requests:
+              cpu: "250m"   # CPU request
+            limits:
+              cpu: "500m"   # CPU limit
+        - name: mysql-client
+          image: mysql:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              sleep 30 # Wait for MySQL to start
+              mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS chatapp;"
+              mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER 'chatapp'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+              mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON chatapp.* TO 'chatapp'@'%';"
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-passwords
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-passwords
+                  key: MYSQL_PASSWORD
       volumes:
         - name: mysql-persistent-storage
           persistentVolumeClaim:
-            claimName: mysql-pv-claiming
+            claimName: mysql-pv-claim

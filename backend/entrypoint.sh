@@ -14,9 +14,8 @@ source /app/venv/bin/activate
 
 # Run database migrations
 cd /app/fundoo
-python3 manage.py makemigrations
 python3 manage.py migrate
 
-sleep 60
+sleep 120
 # Start Gunicorn server
 exec gunicorn --workers 3 --bind 0.0.0.0:8000 fundoo.wsgi:application
