@@ -24,12 +24,22 @@ spec:
               cpu: "500m"
             requests:
               cpu: "200m"
-      affinity:                         # Add the node affinity section here
+          volumeMounts:                           # Add volume mount for config map
+            - name: config-volume
+              mountPath: /etc/config
+      affinity:                                   # Add the node affinity section here
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: node-group          # Specify the node group label key
+                  - key: node-group                  # Specify the node group label key
                     operator: In
                     values:
-                      - frontback            # Specify the node group label value
+                      - frontback                    # Specify the node group label value
+      volumes:                                    # Define the volume for config map
+        - name: config-volume
+          configMap:
+            name: nginx-config                    # Name of the ConfigMap to mount
+            items:
+              - key: BACKEND_SERVICE_NAME         # Specify the key from the ConfigMap
+                path: backend_service.env         # Specify the path in the container
